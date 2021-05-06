@@ -1,3 +1,6 @@
 [submodule "pcb-tools"]
 	path = pcb-tools
 	url = https://github.com/curtacircuitos/pcb-tools.git
+[submodule "cuflow"]
+	path = cuflow
+	url = https://github.com/ThomasPDye/cuflow.git
