@@ -8,8 +8,11 @@ Created on Wed May  5 09:56:19 2021
 from cuflow import cuflow
 
 class CherryMX(cuflow.Part):
-    family="S"
+    family="K"
     footprint="CherryMX"
+    source={"Cherry":"MX"}
+    mfr="MX"
+    val=""
     def pth(self,dc,d):
         dc.board.hole(dc.xy,d)
         p = dc.copy()
@@ -33,38 +36,56 @@ class CherryMX(cuflow.Part):
         self.pth(dc,cuflow.inches(0.059))
         dc.pop()
         # Switch Pin 2
-        dc.goxy(5.08,6*1.27)
+        dc.goxy(10.16-1.27,3*1.27)
         dc.push()
         self.pth(dc,cuflow.inches(0.059))
         dc.pop()
-        if(self.LED is True):
+        # back to center
+        dc.goxy(1.27-5.08,-6*1.27)
+        if(self.LED):
+            # LED pin 1
             dc.goxy(-1.27,-5.08)
             dc.push()
-            self.pth(dc,cuflow.inches(0.039))
+            self.pth(dc, cuflow.inches(0.039))
             dc.pop()
-            dc.goxy(1.27,-5.08)
+            # LED pin 2
+            dc.goxy(2.54,0)
             dc.push()
-            self.pth(dc,cuflow.inches(0.039))
+            self.pth(dc, cuflow.inches(0.039))
             dc.pop()
-        if(self.Diode is True):
-            dc.goxy(-3*1.27,-5.08)
+            # back to center
+            dc.goxy(-1.27,5.08)
+        if(self.Diode):
+            # Diode pin 1
+            dc.goxy(-5.08,-5.08)
             dc.push()
-            self.pth(dc,cuflow.inches(0.039))
+            self.pth(dc, cuflow.inches(0.039))
             dc.pop()
-            dc.goxy(3*1.27,-5.08)
+            # Diode pin 2
+            dc.goxy(10.16,0)
             dc.push()
-            self.pth(dc,cuflow.inches(0.039))
+            self.pth(dc, cuflow.inches(0.039))
             dc.pop()
-        if(self.MountingPins is True):
-            dc.goxy(-5.08,0)
+            # back to center
+            dc.goxy(-5.08,5.08)
+        if(self.MountingPins):
+            # Mounting Pin 1
+            dc.goxy(-5.08-1.27,0)
             dc.push()
-            self.pth(dc,cuflow.inches(0.059))
+            self.pth(dc, cuflow.inches(0.067))
             dc.pop()
-            dc.goxy(5.08,0)
+            # Mounting Pin 2
+            dc.goxy(10.16+2.54,0)
             dc.push()
-            self.pth(dc,cuflow.inches(0.059))
+            self.pth(dc, cuflow.inches(0.067))
             dc.pop()
-        
+            # back to center
+            dc.goxy(-5.08-1.27,0)
+            
+    
+    def escape(self):
+        return
+    
 class CherryMX_Plate(CherryMX):
     LED=False
     Diode=False
@@ -79,7 +100,7 @@ class CherryMX_PlateDiode(CherryMX):
     LED=False
     Diode=True
     MountingPins=False
-        
+
 class CherryMX_PCB(CherryMX):
     LED=False
     Diode=False
@@ -99,13 +120,10 @@ if __name__ == "__main__":
     U=19.05
     brd = cuflow.Board((60,40), trace=0.127, space=0.127, via_hole=0.2, via=0.4, via_space=0.254, silk=0.153)
     dc = brd.DC((30,20))
-    dc.left(90)
-    dc.forward(1.5*U)
-    dc.right(90)
-    dc.forward(U)
+    dc.goxyy(-1.5*U,U)
     dc.push()
-    s1 = CherryMX_Plate(dc)
-    dc.pop()
+    s1 = CherryMX_PlateLED(dc).escape()
     brd.outline()
+    brd.fill()
     brd.check()
-    
+    brd.save("switchTest")
